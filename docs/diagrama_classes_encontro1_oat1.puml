@@ -1,0 +1,56 @@
+@startuml
+!pragma layout smetana
+title OAT 1 - Encontro 1 - Entidades e Enum
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #17173A
+  ArrowColor #17173A
+  FontColor #111111
+  HeaderBackgroundColor #F0F0F2
+}
+
+package "model" {
+  enum CategoriaPeca {
+    MOTOR
+    SUSPENSAO
+    FREIOS
+    ELETRICA
+    ACESSORIOS
+  }
+
+  class Peca {
+    - codigo : Long
+    - codigoBarras : String
+    - fornecedor : String
+    - quantidadeEstoque : Integer
+    - precoCusto : BigDecimal
+    - precoVenda : BigDecimal
+    - dataCadastro : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - tamanho : String
+    - cor : String
+    - categoria : CategoriaPeca
+  }
+
+  class Servico {
+    - codigo : Long
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    - dataCriacao : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+  }
+}
+
+Peca --> "1" CategoriaPeca : categoria
+
+legend bottom
+  + publico
+  - privado
+endlegend
+@enduml
