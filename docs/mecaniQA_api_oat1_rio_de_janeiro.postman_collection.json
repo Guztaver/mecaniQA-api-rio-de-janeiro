@@ -1,0 +1,141 @@
+{
+  "info": {
+    "_postman_id": "9d4f9a5b-5392-4f64-9c67-cb81a9a0f0d1",
+    "name": "mecaniQA API - OAT 1 - Rio de Janeiro",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Peças",
+      "item": [
+        {
+          "name": "US01 - Cadastrar peça",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoBarras\": \"789000000001\",\n  \"fornecedor\": \"Fornecedor Exemplo\",\n  \"quantidadeEstoque\": 20,\n  \"precoCusto\": 80.00,\n  \"precoVenda\": 120.00,\n  \"tamanho\": null,\n  \"cor\": null,\n  \"categoria\": \"MOTOR\"\n}"
+            },
+            "url": "{{baseUrl}}/api/pecas"
+          }
+        },
+        {
+          "name": "US02 - Listar peças",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas"
+          }
+        },
+        {
+          "name": "US02 - Buscar peça por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/1"
+          }
+        },
+        {
+          "name": "US03 - Atualizar peça",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantidadeEstoque\": 25,\n  \"precoCusto\": 85.00,\n  \"precoVenda\": 130.00\n}"
+            },
+            "url": "{{baseUrl}}/api/pecas/1"
+          }
+        },
+        {
+          "name": "US04 - Excluir peça",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Serviços",
+      "item": [
+        {
+          "name": "US05 - Cadastrar serviço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Troca de óleo\",\n  \"tempoEstimadoMinutos\": 40,\n  \"custoTabelado\": 150.00\n}"
+            },
+            "url": "{{baseUrl}}/api/servicos"
+          }
+        },
+        {
+          "name": "US06 - Listar serviços",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos"
+          }
+        },
+        {
+          "name": "US06 - Buscar serviço por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/1"
+          }
+        },
+        {
+          "name": "US07 - Atualizar serviço",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempoEstimadoMinutos\": 50,\n  \"custoTabelado\": 170.00\n}"
+            },
+            "url": "{{baseUrl}}/api/servicos/1"
+          }
+        },
+        {
+          "name": "US08 - Excluir serviço",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/1"
+          }
+        }
+      ]
+    }
+  ]
+}

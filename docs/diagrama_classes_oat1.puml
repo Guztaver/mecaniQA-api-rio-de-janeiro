@@ -1,0 +1,195 @@
+@startuml
+!pragma layout smetana
+title OAT 1 - Diagrama de Classes - mecaniQA API Rio de Janeiro
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #17173A
+  ArrowColor #17173A
+  FontColor #111111
+  HeaderBackgroundColor #F0F0F2
+}
+
+package "model" {
+  enum CategoriaPeca {
+    MOTOR
+    SUSPENSAO
+    FREIOS
+    ELETRICA
+    ACESSORIOS
+  }
+
+  class Peca {
+    - codigo : Long
+    - codigoBarras : String
+    - fornecedor : String
+    - quantidadeEstoque : Integer
+    - precoCusto : BigDecimal
+    - precoVenda : BigDecimal
+    - dataCadastro : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - tamanho : String
+    - cor : String
+    - categoria : CategoriaPeca
+    + Peca()
+    + Peca(codigo : Long, codigoBarras : String, fornecedor : String,\nquantidadeEstoque : Integer, precoCusto : BigDecimal, precoVenda : BigDecimal,\ndataCadastro : LocalDateTime, dataAtualizacao : LocalDateTime,\ntamanho : String, cor : String, categoria : CategoriaPeca)
+    + getCodigo() : Long
+    + setCodigo(codigo : Long) : void
+    + getCodigoBarras() : String
+    + setCodigoBarras(codigoBarras : String) : void
+    + getFornecedor() : String
+    + setFornecedor(fornecedor : String) : void
+    + getQuantidadeEstoque() : Integer
+    + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
+    + getPrecoCusto() : BigDecimal
+    + setPrecoCusto(precoCusto : BigDecimal) : void
+    + getPrecoVenda() : BigDecimal
+    + setPrecoVenda(precoVenda : BigDecimal) : void
+    + getDataCadastro() : LocalDateTime
+    + setDataCadastro(dataCadastro : LocalDateTime) : void
+    + getDataAtualizacao() : LocalDateTime
+    + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
+    + getTamanho() : String
+    + setTamanho(tamanho : String) : void
+    + getCor() : String
+    + setCor(cor : String) : void
+    + getCategoria() : CategoriaPeca
+    + setCategoria(categoria : CategoriaPeca) : void
+  }
+
+  class Servico {
+    - codigo : Long
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    - dataCriacao : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    + Servico()
+    + Servico(codigo : Long, nome : String, tempoEstimadoMinutos : Integer,\ncustoTabelado : BigDecimal, dataCriacao : LocalDateTime, dataAtualizacao : LocalDateTime)
+    + getCodigo() : Long
+    + setCodigo(codigo : Long) : void
+    + getNome() : String
+    + setNome(nome : String) : void
+    + getTempoEstimadoMinutos() : Integer
+    + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
+    + getCustoTabelado() : BigDecimal
+    + setCustoTabelado(custoTabelado : BigDecimal) : void
+    + getDataCriacao() : LocalDateTime
+    + setDataCriacao(dataCriacao : LocalDateTime) : void
+    + getDataAtualizacao() : LocalDateTime
+    + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
+  }
+}
+
+package "request" {
+  class PecaRequest {
+    - codigoBarras : String
+    - fornecedor : String
+    - quantidadeEstoque : Integer
+    - precoCusto : BigDecimal
+    - precoVenda : BigDecimal
+    - tamanho : String
+    - cor : String
+    - categoria : CategoriaPeca
+    + PecaRequest()
+    + getCodigoBarras() : String
+    + setCodigoBarras(codigoBarras : String) : void
+    + getFornecedor() : String
+    + setFornecedor(fornecedor : String) : void
+    + getQuantidadeEstoque() : Integer
+    + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
+    + getPrecoCusto() : BigDecimal
+    + setPrecoCusto(precoCusto : BigDecimal) : void
+    + getPrecoVenda() : BigDecimal
+    + setPrecoVenda(precoVenda : BigDecimal) : void
+    + getTamanho() : String
+    + setTamanho(tamanho : String) : void
+    + getCor() : String
+    + setCor(cor : String) : void
+    + getCategoria() : CategoriaPeca
+    + setCategoria(categoria : CategoriaPeca) : void
+  }
+
+  class ServicoRequest {
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    + ServicoRequest()
+    + getNome() : String
+    + setNome(nome : String) : void
+    + getTempoEstimadoMinutos() : Integer
+    + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
+    + getCustoTabelado() : BigDecimal
+    + setCustoTabelado(custoTabelado : BigDecimal) : void
+  }
+}
+
+package "repository" {
+  class PecaRepository <<Singleton>> {
+    {static} - instance : PecaRepository
+    - pecas : List<Peca>
+    - proximoCodigo : Long
+    - PecaRepository()
+    {static} + getInstance() : PecaRepository
+    + salvar(peca : Peca) : Peca
+    + listar() : List<Peca>
+    + buscarPorCodigo(codigo : Long) : Peca
+    + atualizar(peca : Peca) : Peca
+    + excluir(codigo : Long) : boolean
+  }
+
+  class ServicoRepository <<Singleton>> {
+    {static} - instance : ServicoRepository
+    - servicos : List<Servico>
+    - proximoCodigo : Long
+    - ServicoRepository()
+    {static} + getInstance() : ServicoRepository
+    + salvar(servico : Servico) : Servico
+    + listar() : List<Servico>
+    + buscarPorCodigo(codigo : Long) : Servico
+    + atualizar(servico : Servico) : Servico
+    + excluir(codigo : Long) : boolean
+  }
+}
+
+package "controller" {
+  class PecaController <<RestController>> {
+    - pecaRepository : PecaRepository
+    + PecaController()
+    + cadastrar(request : PecaRequest) : ResponseEntity<Peca>
+    + listar() : ResponseEntity<List<Peca>>
+    + buscarPorCodigo(codigo : Long) : ResponseEntity<Peca>
+    + atualizar(codigo : Long, request : PecaRequest) : ResponseEntity<Peca>
+    + excluir(codigo : Long) : ResponseEntity<Void>
+  }
+
+  class ServicoController <<RestController>> {
+    - servicoRepository : ServicoRepository
+    + ServicoController()
+    + cadastrar(request : ServicoRequest) : ResponseEntity<Servico>
+    + listar() : ResponseEntity<List<Servico>>
+    + buscarPorCodigo(codigo : Long) : ResponseEntity<Servico>
+    + atualizar(codigo : Long, request : ServicoRequest) : ResponseEntity<Servico>
+    + excluir(codigo : Long) : ResponseEntity<Void>
+  }
+}
+
+Peca --> "1" CategoriaPeca : categoria
+PecaRequest --> "1" CategoriaPeca : categoria
+PecaRepository "1" o-- "0..*" Peca : pecas
+ServicoRepository "1" o-- "0..*" Servico : servicos
+PecaController --> "1" PecaRepository : acessa via getInstance()
+ServicoController --> "1" ServicoRepository : acessa via getInstance()
+PecaController ..> PecaRequest : recebe
+ServicoController ..> ServicoRequest : recebe
+
+legend bottom
+  + público
+  - privado
+  Membros sublinhados são static
+endlegend
+@enduml
