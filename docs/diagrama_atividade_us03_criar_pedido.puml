@@ -1,0 +1,49 @@
+@startuml
+title US03 - Criar Pedido de Peças - Diagrama de Atividades (Visão do Controller)
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #17173A
+  ArrowColor #17173A
+  FontColor #111111
+}
+skinparam activityDiamond {
+  BackgroundColor #F0F0F2
+  BorderColor #17173A
+  FontColor #111111
+}
+
+start
+
+:Receber requisição HTTP POST "/api/pedidos" com PedidoPecasRequest;
+
+:Validar dados básicos da requisição (itens informados, peças válidas e quantidade > 0);
+
+if (Dados da requisição são válidos?) then (não - dados inválidos)
+  :Montar resposta de erro (HTTP 400 Bad Request);
+  :Retornar resposta de erro ao cliente;
+  stop
+else (sim - dados válidos)
+  :Iniciar construção do PedidoPecas via Builder manual;
+  
+  :Instanciar itens associativos (ItemPedidoPecas) com cada Peça e respectiva quantidade;
+  
+  :Associar lista de ItemPedidoPecas ao PedidoPecas;
+  
+  :Definir status inicial obrigatório como "Orçando" (StatusPedidoPecas.ORCANDO);
+  
+  :Calcular valor total e definir datas de auditoria;
+  
+  :Chamar PedidoPecasRepository.salvar(pedido);
+  
+  :Persistir entidade em memória gerando código identificador;
+  
+  :Montar resposta de sucesso (HTTP 201 Created) com PedidoPecas criado;
+  
+  :Retornar resposta de sucesso ao cliente;
+  stop
+endif
+
+@enduml
