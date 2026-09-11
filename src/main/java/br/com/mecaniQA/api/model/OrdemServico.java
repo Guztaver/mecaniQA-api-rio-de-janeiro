@@ -19,28 +19,6 @@ public class OrdemServico {
 	private LocalDateTime dataAtualizacao;
 	private LocalDateTime dataFinalizacao;
 
-	public OrdemServico() {
-		this.servicos = new ArrayList<>();
-		this.status = StatusOrdemServico.ABERTO;
-		this.valorTotal = BigDecimal.ZERO;
-	}
-
-	public OrdemServico(Long codigo, String descricao, String cliente, String veiculo,
-			StatusOrdemServico status, List<Servico> servicos, PedidoPecas pedidoPecas,
-			BigDecimal valorTotal, LocalDateTime dataAbertura, LocalDateTime dataAtualizacao,
-			LocalDateTime dataFinalizacao) {
-		this.codigo = codigo;
-		this.descricao = descricao;
-		this.cliente = cliente;
-		this.veiculo = veiculo;
-		this.status = status;
-		this.servicos = servicos != null ? servicos : new ArrayList<>();
-		this.pedidoPecas = pedidoPecas;
-		this.valorTotal = valorTotal != null ? valorTotal : BigDecimal.ZERO;
-		this.dataAbertura = dataAbertura;
-		this.dataAtualizacao = dataAtualizacao;
-		this.dataFinalizacao = dataFinalizacao;
-	}
 
 	private OrdemServico(Builder builder) {
 		this.codigo = builder.codigo;

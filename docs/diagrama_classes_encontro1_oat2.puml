@@ -1,0 +1,126 @@
+@startuml
+!pragma layout smetana
+title OAT 2 - Encontro 1 - Padrao Builder na Ordem de Servico (OS)
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #17173A
+  ArrowColor #17173A
+  FontColor #111111
+  HeaderBackgroundColor #F0F0F2
+}
+
+package "model" {
+
+  enum StatusOrdemServico {
+    ABERTO
+    PENDENTE_PAGAMENTO
+    PAGO
+    EM_EXECUCAO
+    EXECUTADO
+  }
+
+  class OrdemServico {
+    - codigo : Long
+    - descricao : String
+    - cliente : String
+    - veiculo : String
+    - status : StatusOrdemServico
+    - servicos : List<Servico>
+    - pedidoPecas : PedidoPecas
+    - valorTotal : BigDecimal
+    - dataAbertura : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - dataFinalizacao : LocalDateTime
+    - OrdemServico(builder : Builder)
+    {static} + builder() : Builder
+    + adicionarServico(servico : Servico) : void
+    + recalcularValorTotal() : void
+    {static} - calcularValorTotal(servicos : List<Servico>, pedidoPecas : PedidoPecas) : BigDecimal
+    + getCodigo() : Long
+    + setCodigo(codigo : Long) : void
+    + getDescricao() : String
+    + setDescricao(descricao : String) : void
+    + getCliente() : String
+    + setCliente(cliente : String) : void
+    + getVeiculo() : String
+    + setVeiculo(veiculo : String) : void
+    + getStatus() : StatusOrdemServico
+    + setStatus(status : StatusOrdemServico) : void
+    + getServicos() : List<Servico>
+    + setServicos(servicos : List<Servico>) : void
+    + getPedidoPecas() : PedidoPecas
+    + setPedidoPecas(pedidoPecas : PedidoPecas) : void
+    + getValorTotal() : BigDecimal
+    + setValorTotal(valorTotal : BigDecimal) : void
+    + getDataAbertura() : LocalDateTime
+    + setDataAbertura(dataAbertura : LocalDateTime) : void
+    + getDataAtualizacao() : LocalDateTime
+    + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
+    + getDataFinalizacao() : LocalDateTime
+    + setDataFinalizacao(dataFinalizacao : LocalDateTime) : void
+  }
+
+  class "OrdemServico.Builder" as Builder {
+    - codigo : Long
+    - descricao : String
+    - cliente : String
+    - veiculo : String
+    - status : StatusOrdemServico
+    - servicos : List<Servico>
+    - pedidoPecas : PedidoPecas
+    - valorTotal : BigDecimal
+    - dataAbertura : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - dataFinalizacao : LocalDateTime
+    + codigo(codigo : Long) : Builder
+    + descricao(descricao : String) : Builder
+    + cliente(cliente : String) : Builder
+    + veiculo(veiculo : String) : Builder
+    + status(status : StatusOrdemServico) : Builder
+    + servicos(servicos : List<Servico>) : Builder
+    + servico(servico : Servico) : Builder
+    + pedidoPecas(pedidoPecas : PedidoPecas) : Builder
+    + valorTotal(valorTotal : BigDecimal) : Builder
+    + dataAbertura(dataAbertura : LocalDateTime) : Builder
+    + dataAtualizacao(dataAtualizacao : LocalDateTime) : Builder
+    + dataFinalizacao(dataFinalizacao : LocalDateTime) : Builder
+    + build() : OrdemServico
+  }
+
+  class Servico {
+    - codigo : Long
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    - dataCriacao : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+  }
+
+  class PedidoPecas {
+    - codigo : Long
+    - descricao : String
+    - status : StatusPedidoPecas
+    - valorTotal : BigDecimal
+    - dataCriacao : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+  }
+}
+
+OrdemServico +-- Builder : classe aninhada
+Builder ..> OrdemServico : <<creates>>
+OrdemServico --> "1" StatusOrdemServico : status
+OrdemServico "1" o-- "0..*" Servico : servicos
+OrdemServico "1" o-- "0..1" PedidoPecas : pedidoPecas
+
+legend bottom
+  + público
+  - privado
+  Membros sublinhados são static
+  Construtor de OrdemServico é estritamente privado (- OrdemServico(builder : Builder))
+endlegend
+@enduml
