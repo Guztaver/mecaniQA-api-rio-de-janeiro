@@ -118,9 +118,9 @@ OrdemServico "1" o-- "0..*" Servico : servicos
 OrdemServico "1" o-- "0..1" PedidoPecas : pedidoPecas
 
 legend bottom
-  + público
+  + publico
   - privado
-  Membros sublinhados são static
-  Construtor de OrdemServico é estritamente privado (- OrdemServico(builder : Builder))
+  Membros sublinhados sao static
+  Construtor de OrdemServico e estritamente privado (- OrdemServico(builder : Builder))
 endlegend
 @enduml
