@@ -1,0 +1,217 @@
+@startuml
+!pragma layout smetana
+title OAT 2 - Diagrama de Classes - Entidades, Entidade Associativa, Builders e DTOs
+top to bottom direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #17173A
+  ArrowColor #17173A
+  FontColor #111111
+  HeaderBackgroundColor #F0F0F2
+}
+
+package "model" {
+
+  enum StatusOrdemServico {
+    ABERTO
+    PENDENTE_PAGAMENTO
+    PAGO
+    EM_EXECUCAO
+    EXECUTADO
+    - descricao : String
+    + getDescricao() : String
+  }
+
+  enum StatusPedidoPecas {
+    ORCANDO
+    PENDENTE_PAGAMENTO
+    PAGO_FATURADO
+    ENTREGUE
+    - descricao : String
+    + getDescricao() : String
+  }
+
+  enum CategoriaPeca {
+    MOTOR
+    SUSPENSAO
+    FREIOS
+    ELETRICA
+    ACESSORIOS
+  }
+
+  class OrdemServico {
+    - codigo : Long
+    - descricao : String
+    - cliente : String
+    - veiculo : String
+    - status : StatusOrdemServico
+    - servicos : List<Servico>
+    - pedidoPecas : PedidoPecas
+    - valorTotal : BigDecimal
+    - dataAbertura : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - dataFinalizacao : LocalDateTime
+    - OrdemServico(builder : Builder)
+    {static} + builder() : Builder
+    + adicionarServico(servico : Servico) : void
+    + recalcularValorTotal() : void
+    {static} - calcularValorTotal(...) : BigDecimal
+    + getters / setters()
+  }
+
+  class "OrdemServico.Builder" as OSBuilder {
+    - codigo : Long
+    - descricao : String
+    - cliente : String
+    - veiculo : String
+    - status : StatusOrdemServico
+    - servicos : List<Servico>
+    - pedidoPecas : PedidoPecas
+    - valorTotal : BigDecimal
+    + cliente(cliente : String) : OSBuilder
+    + veiculo(veiculo : String) : OSBuilder
+    + status(status : StatusOrdemServico) : OSBuilder
+    + servicos(servicos : List<Servico>) : OSBuilder
+    + servico(servico : Servico) : OSBuilder
+    + pedidoPecas(pedidoPecas : PedidoPecas) : OSBuilder
+    + build() : OrdemServico
+  }
+
+  class PedidoPecas {
+    - codigo : Long
+    - descricao : String
+    - status : StatusPedidoPecas
+    - itens : List<ItemPedidoPecas>
+    - valorTotal : BigDecimal
+    - dataCriacao : LocalDateTime
+    - dataAtualizacao : LocalDateTime
+    - PedidoPecas(builder : Builder)
+    {static} + builder() : Builder
+    + adicionarItem(item : ItemPedidoPecas) : void
+    + recalcularValorTotal() : void
+    {static} - calcularValorTotal(...) : BigDecimal
+    + getters / setters()
+  }
+
+  class "PedidoPecas.Builder" as PedidoBuilder {
+    - codigo : Long
+    - descricao : String
+    - status : StatusPedidoPecas
+    - itens : List<ItemPedidoPecas>
+    - valorTotal : BigDecimal
+    + descricao(descricao : String) : PedidoBuilder
+    + status(status : StatusPedidoPecas) : PedidoBuilder
+    + itens(itens : List<ItemPedidoPecas>) : PedidoBuilder
+    + item(item : ItemPedidoPecas) : PedidoBuilder
+    + valorTotal(valorTotal : BigDecimal) : PedidoBuilder
+    + build() : PedidoPecas
+  }
+
+  class ItemPedidoPecas <<Entidade Associativa>> {
+    - codigo : Long
+    - peca : Peca
+    - quantidade : Integer
+    - precoUnitario : BigDecimal
+    + ItemPedidoPecas()
+    + ItemPedidoPecas(codigo, peca, quantidade, precoUnitario)
+    - ItemPedidoPecas(builder : Builder)
+    {static} + builder() : Builder
+    + getSubtotal() : BigDecimal
+    + getters / setters()
+  }
+
+  class Peca {
+    - codigo : Long
+    - codigoBarras : String
+    - fornecedor : String
+    - quantidadeEstoque : Integer
+    - precoCusto : BigDecimal
+    - precoVenda : BigDecimal
+    - categoria : CategoriaPeca
+    + getters / setters()
+  }
+
+  class Servico {
+    - codigo : Long
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    + getters / setters()
+  }
+
+}
+
+package "request (DTOs)" {
+
+  class OrdemServicoRequest {
+    - descricao : String
+    - cliente : String
+    - veiculo : String
+    - servicoIds : List<Long>
+    - pedidoPecasId : Long
+    + getters / setters()
+  }
+
+  class PedidoPecasRequest {
+    - descricao : String
+    - itens : List<ItemPedidoPecasRequest>
+    + getters / setters()
+  }
+
+  class ItemPedidoPecasRequest {
+    - pecaId : Long
+    - quantidade : Integer
+    + getters / setters()
+  }
+
+  class PecaRequest {
+    - codigoBarras : String
+    - fornecedor : String
+    - quantidadeEstoque : Integer
+    - precoVenda : BigDecimal
+    - categoria : CategoriaPeca
+    + getters / setters()
+  }
+
+  class ServicoRequest {
+    - nome : String
+    - tempoEstimadoMinutos : Integer
+    - custoTabelado : BigDecimal
+    + getters / setters()
+  }
+
+}
+
+' Relacionamentos
+OrdemServico +-- OSBuilder : classe aninhada
+OSBuilder ..> OrdemServico : <<creates>>
+PedidoPecas +-- PedidoBuilder : classe aninhada
+PedidoBuilder ..> PedidoPecas : <<creates>>
+
+OrdemServico --> "1" StatusOrdemServico : status
+OrdemServico "1" o-- "0..*" Servico : servicos
+OrdemServico "1" o-- "0..1" PedidoPecas : pedidoPecas
+
+PedidoPecas --> "1" StatusPedidoPecas : status
+PedidoPecas "1" *-- "1..*" ItemPedidoPecas : itens
+ItemPedidoPecas --> "1" Peca : peca
+Peca --> "1" CategoriaPeca : categoria
+
+' Relacionamentos com DTOs
+PedidoPecasRequest "1" *-- "1..*" ItemPedidoPecasRequest : itens
+OrdemServicoRequest ..> OrdemServico : mapeia para
+PedidoPecasRequest ..> PedidoPecas : mapeia para
+PecaRequest ..> Peca : mapeia para
+ServicoRequest ..> Servico : mapeia para
+
+legend bottom
+  + público   - privado   Membros sublinhados são static
+  Entidade Associativa: ItemPedidoPecas modela a relação N:N entre PedidoPecas e Peca com histórico de precoUnitario e cálculo de getSubtotal()
+  Padrão Builder: Construtores de OrdemServico e PedidoPecas são estritamente privados (-), forçando o uso de builder() e blindando a criação
+endlegend
+
+@enduml
