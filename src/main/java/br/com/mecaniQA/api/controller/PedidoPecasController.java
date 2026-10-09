@@ -28,7 +28,7 @@ import br.com.mecaniQA.api.request.StatusPedidoPecasRequest;
 import br.com.mecaniQA.api.response.PedidoPecasResponse;
 
 @RestController
-@RequestMapping("/api/pedidos-pecas")
+@RequestMapping("/api/pedidos")
 public class PedidoPecasController {
 
 	private PedidoPecasRepository pedidoPecasRepository;
