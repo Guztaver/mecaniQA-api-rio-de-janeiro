@@ -1,5 +1,6 @@
 package br.com.mecaniQA.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.mecaniQA.api.mapper.PecaMapper;
 import br.com.mecaniQA.api.model.Peca;
 import br.com.mecaniQA.api.repository.PecaRepository;
 import br.com.mecaniQA.api.request.PecaRequest;
+import br.com.mecaniQA.api.response.PecaResponse;
 
 @RestController
 @RequestMapping("/api/pecas")
@@ -28,38 +31,34 @@ public class PecaController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Peca> cadastrar(@RequestBody PecaRequest request) {
-		Peca peca = new Peca();
-		peca.setCodigoBarras(request.getCodigoBarras());
-		peca.setFornecedor(request.getFornecedor());
-		peca.setQuantidadeEstoque(request.getQuantidadeEstoque());
-		peca.setPrecoCusto(request.getPrecoCusto());
-		peca.setPrecoVenda(request.getPrecoVenda());
-		peca.setTamanho(request.getTamanho());
-		peca.setCor(request.getCor());
-		peca.setCategoria(request.getCategoria());
-
+	public ResponseEntity<PecaResponse> cadastrar(@RequestBody PecaRequest request) {
+		Peca peca = PecaMapper.toEntity(request);
 		Peca pecaCadastrada = pecaRepository.salvar(peca);
-		return ResponseEntity.status(HttpStatus.CREATED).body(pecaCadastrada);
+		return ResponseEntity.status(HttpStatus.CREATED).body(PecaMapper.toResponse(pecaCadastrada));
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Peca>> listar() {
-		return ResponseEntity.ok(pecaRepository.listar());
+	public ResponseEntity<List<PecaResponse>> listar() {
+		List<Peca> pecas = pecaRepository.listar();
+		List<PecaResponse> responses = new ArrayList<>();
+		for (Peca peca : pecas) {
+			responses.add(PecaMapper.toResponse(peca));
+		}
+		return ResponseEntity.ok(responses);
 	}
 
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Peca> buscarPorCodigo(@PathVariable Long codigo) {
+	public ResponseEntity<PecaResponse> buscarPorCodigo(@PathVariable Long codigo) {
 		Peca peca = pecaRepository.buscarPorCodigo(codigo);
 		if (peca == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		return ResponseEntity.ok(peca);
+		return ResponseEntity.ok(PecaMapper.toResponse(peca));
 	}
 
 	@PutMapping("/{codigo}")
-	public ResponseEntity<Peca> atualizar(@PathVariable Long codigo, @RequestBody PecaRequest request) {
+	public ResponseEntity<PecaResponse> atualizar(@PathVariable Long codigo, @RequestBody PecaRequest request) {
 		Peca peca = pecaRepository.buscarPorCodigo(codigo);
 		if (peca == null) {
 			return ResponseEntity.notFound().build();
@@ -68,7 +67,18 @@ public class PecaController {
 		peca.setQuantidadeEstoque(request.getQuantidadeEstoque());
 		peca.setPrecoCusto(request.getPrecoCusto());
 		peca.setPrecoVenda(request.getPrecoVenda());
-		return ResponseEntity.ok(pecaRepository.atualizar(peca));
+		if (request.getCodigoBarras() != null) {
+			peca.setCodigoBarras(request.getCodigoBarras());
+		}
+		if (request.getFornecedor() != null) {
+			peca.setFornecedor(request.getFornecedor());
+		}
+		if (request.getCategoria() != null) {
+			peca.setCategoria(request.getCategoria());
+		}
+
+		Peca pecaAtualizada = pecaRepository.atualizar(peca);
+		return ResponseEntity.ok(PecaMapper.toResponse(pecaAtualizada));
 	}
 
 	@DeleteMapping("/{codigo}")
